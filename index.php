@@ -142,105 +142,10 @@ function refreshKeys($data, $pdo) {
     <title>Enji Player</title>
     <link rel="stylesheet" href="main.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
-
-        #Header {
-            text-align: center;
-            padding: 20px 10px;
-        }
-
-        #Header h1 {
-            margin: 0;
-            font-size: clamp(1.5rem, 5vw, 2.5rem);
-        }
-
-        #Header p {
-            margin: 10px 0 0;
-            font-size: clamp(0.9rem, 3vw, 1.2rem);
-        }
-
-        table {
-            width: 80%;
-            margin: 20px auto;
-            border-collapse: collapse;
-            font-size: clamp(0.8rem, 2.5vw, 1rem);
-        }
-
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            position: sticky;
-            top: 0;
-        }
-
-        .profile-pic {
-            width: 30px;
-            height: 30px;
-            object-fit: cover;
-            margin-right: 5px;
-            vertical-align: middle;
-        }
-
-        a {
-            text-decoration: none;
-            color: #1DB954;
-            white-space: nowrap;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        hr {
-            width: 80%;
-            margin: 10px auto;
-            border: 0;
-            height: 1px;
-            background-color: #ddd;
-        }
-
-        /* Responsive table */
-        @media screen and (max-width: 600px) {
-            table {
-                width: 80%;
-                display: block;
-                margin: 20px auto;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            td:nth-child(2), th:nth-child(2) {
-                display: none;
-            }
-        }
-
-        /* For very small screens */
-        @media screen and (max-width: 400px) {
-            table {
-                width: 100%;
-                margin: 20px auto;
-                display: block;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .profile-pic {
-                width: 25px;
-                height: 25px;
-            }
-        }
-    </style>
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="images/site.webmanifest">
 </head>
 <body>
 <div id="Header">
