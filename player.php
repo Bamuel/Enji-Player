@@ -1,5 +1,4 @@
 <?php
-
 if (!isset($_GET['id'])) {
     header("Location: index.php");
     exit();
@@ -7,153 +6,23 @@ if (!isset($_GET['id'])) {
 
 require_once 'load_env.php';
 require_once 'db.php';
+require_once 'functions.php';
 
-if (isset($_GET['id']) && ($_GET['func'] ?? "") == 'getSong') {
-    $keys = GetKeys($_GET['id']);
-    $nowPlayingData = json_decode(getNowPlaying($keys), true);
-    echo json_encode($nowPlayingData['item']['name'] ?? "");
-    exit();
-}
-$pdo = getPDO();
+$initialData = [
+    'image' => "images/EnjiPlayer.png",
+    'artist' => "Enji Player",
+    'song' => "No Song Found"];
 
-$sql = "SELECT * FROM SpotifyKeys WHERE user_uri = :id";
-$stmt = $pdo->prepare($sql);
-$stmt->bindParam(':id', $_GET['id'], PDO::PARAM_INT);
-$stmt->execute();
-$user = $stmt->fetch();
+$keys = GetKeys($_GET['id']);
+$nowPlayingData = json_decode(getNowPlaying($keys), true);
 
-
-
-if (isset($user['user_uri']) && $_GET['id'] == $user['user_uri']) {
-    $keys = GetKeys($_GET['id']);
-    $nowPlayingData = json_decode(getNowPlaying($keys), true);
-    if (empty($nowPlayingData)) {
-        $artist = "Enji Player";
-        $image = "https://i.imgur.com/OIpECt6.jpg";
-        $song = "No Song Found";
-    }
-    else {
-        $image = $nowPlayingData['item']['album']['images'][0]['url'];
-        $artist = array();
-        foreach ($nowPlayingData['item']['artists'] as $artists) {
-            $artist[] = $artists['name'];
-        }
-        $artistFirst = $artist[0];
-        $artist = rtrim(implode(', ', $artist), ', ');
-        $song = $nowPlayingData['item']['name'];
-    }
-}
-
-function getKeys($id) {
-    try {
-        include_once 'db.php';
-        // Get PDO connection
-        $pdo = getPDO();
-
-        // Query with prepared statement
-        $sqlquery = "SELECT * FROM SpotifyKeys WHERE user_uri = :id";
-        $stmt = $pdo->prepare($sqlquery);
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $row = $stmt->fetch();
-
-        if ($row && date("Y-m-d H:i:s") > $row['expires_in']) {
-            // Refresh the token if expired
-            //echo "Token expired, refreshing...";
-            refreshKeys($row, $pdo);
-            // Fetch updated record after refresh
-            $stmt->execute();
-            $row = $stmt->fetch();
-        }
-
-        return $row;
-
-    } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
-        return false;
-    }
-}
-
-function refreshKeys($data, $pdo) {
-    $clientId = getenv('SPOTIFY_CLIENT_ID');
-    $clientSecret = getenv('SPOTIFY_CLIENT_SECRET');
-
-    // Prepare POST data
-    $postData = [
-        "grant_type" => "refresh_token",
-        "refresh_token" => $data['refresh_token']];
-
-    // Initialize cURL
-    $curl = curl_init();
-
-    curl_setopt_array($curl, [
-        CURLOPT_URL => "https://accounts.spotify.com/api/token",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "POST",
-        CURLOPT_POSTFIELDS => http_build_query($postData),
-        CURLOPT_USERPWD => "$clientId:$clientSecret",
-        CURLOPT_HTTPHEADER => [
-            "Content-Type: application/x-www-form-urlencoded"],]);
-
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
-    curl_close($curl);
-
-    if ($err) {
-        echo "cURL Error #:" . $err;
-    }
-    else {
-        // Decode response
-        $accesstoken = json_decode($response);
-
-        if (isset($accesstoken->access_token)) {
-            $accesstoken->expires_in = date("Y-m-d H:i:s", strtotime("+" . $accesstoken->expires_in . " seconds"));
-
-            // Update token in the database
-            $sql = "UPDATE SpotifyKeys 
-                    SET access_token = :access_token, expires_in = :expires_in
-                    WHERE id = :id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':access_token', $accesstoken->access_token);
-            $stmt->bindParam(':expires_in', $accesstoken->expires_in);
-            $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
-            $stmt->execute();
-        }
-    }
-}
-
-function getNowPlaying($keys) {
-    $curl = curl_init();
-
-    curl_setopt_array($curl, [
-        CURLOPT_URL => "https://api.spotify.com/v1/me/player/currently-playing",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => "",
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => "GET",
-        CURLOPT_POSTFIELDS => "",
-        CURLOPT_HTTPHEADER => [
-            "Accept: application/json",
-            "Authorization: Bearer " . $keys['access_token'],
-            "Content-Type: application/json"],]);
-
-    $response = curl_exec($curl);
-    $err = curl_error($curl);
-
-    curl_close($curl);
-
-    if ($err) {
-        echo "cURL Error #:" . $err;
-    }
-    else {
-        return $response;
-    }
+if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
+    $initialData['image'] = $nowPlayingData['item']['album']['images'][0]['url'];
+    $artists = array_map(function ($artist) {
+        return $artist['name'];
+    }, $nowPlayingData['item']['artists']);
+    $initialData['artist'] = implode(', ', $artists);
+    $initialData['song'] = $nowPlayingData['item']['name'];
 }
 
 ?>
@@ -166,7 +35,6 @@ function getNowPlaying($keys) {
     <meta http-equiv='cache-control' content='no-cache'>
     <meta http-equiv='expires' content='0'>
     <meta http-equiv='pragma' content='no-cache'>
-    <!--    <meta http-equiv="refresh" content="10" />-->
     <title>Enji Player</title>
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
@@ -180,6 +48,8 @@ function getNowPlaying($keys) {
         }
 
         html, body {
+            background-image: url("images/noise.png");
+            background-repeat: repeat;
             font-family: 'proxima-nova', sans-serif;
             margin: 0;
             overflow: hidden;
@@ -294,18 +164,15 @@ function getNowPlaying($keys) {
         }
 
         h2.scrolling, h4.scrolling {
-            /* -webkit-animation: slide 30s linear infinite; */
             position: absolute;
             animation: slide 30s linear infinite;
         }
 
         @keyframes slide {
             from {
-                /* left: 100%; */
                 transform: translateX(100%);
             }
             to {
-                /* left: -100%; */
                 transform: translateX(-100%);
             }
         }
@@ -332,53 +199,74 @@ function getNowPlaying($keys) {
 </head>
 <body>
 <div class="wrapper">
-    <?php
-    if (isset($gif)) {
-        echo "<img src=\"" . $gif . "\"
-         style=\"z-index: 1000; width: 350px; height: 70px; object-fit: cover; opacity: 0; position: absolute;
-left: 0;right: 0; top:0 ; bottom: 0 ; margin: auto\" class=\"active theSnap\">";
-    }
-
-    ?>
     <div id="container" class="raise active">
         <div class="cover">
-            <img id="album-current" alt="Current album cover" class="active" src="<?php echo $image; ?>">
+            <img id="album-current" alt="Current album cover" class="active" src="<?php echo htmlspecialchars($initialData['image']); ?>">
         </div>
         <div class="main">
-            <div class="artists-height-fix"><h4 id="artists" class="active"><?php echo $artist; ?></h4></div>
-            <h2 id="name" class="active scrolling ">
-                <?php
-                echo $song;
-                ?></h2>
+            <div class="artists-height-fix"><h4 id="artists" class="active"><?php echo htmlspecialchars($initialData['artist']); ?></h4></div>
+            <h2 id="name" class="active scrolling"><?php echo htmlspecialchars($initialData['song']); ?></h2>
         </div>
     </div>
 </div>
 
-</body>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script>
-    songChange();
+    $(document).ready(function () {
+        // Initialize with default values
+        let currentSong = "";
+        let currentImage = "images/EnjiPlayer.png";
+        let currentArtist = "Enji Player";
 
-    function songChange() {
-        $.ajax({
-            url: "/index.php?id=<?php echo $_GET['id'] ?>&func=getSong",
-            type: 'GET',
-            dataType: 'json',
-            success: function (result) {
-                //console.log(result);
-                if (result !== null) {
-                    if (result !== "") {
-                        if (result !== "<?php echo str_replace('"', '\"', $song); ?>") {
-                            console.log('The song has changed so refresh')
-                            console.log(result);
-                            console.log('<?php echo str_replace('"', '\"', $song); ?>');
-                            location.reload();
+        fetchNowPlaying();
+
+        function fetchNowPlaying() {
+            $.ajax({
+                url: "get_now_playing.php",
+                type: 'GET',
+                data: {id: "<?php echo $_GET['id']; ?>"},
+                dataType: 'json',
+                success: function (data) {
+                    if (data && data.item) {
+                        // Update song if changed
+                        if (data.item.name !== currentSong) {
+                            currentSong = data.item.name;
+                            $('#name').text(currentSong);
+
+                            // Update artist
+                            let artists = data.item.artists.map(artist => artist.name);
+                            currentArtist = artists.join(', ');
+                            $('#artists').text(currentArtist);
+
+                            // Update image if changed
+                            if (data.item.album.images[0].url !== currentImage) {
+                                currentImage = data.item.album.images[0].url;
+                                $('#album-current').attr('src', currentImage);
+                            }
+                        }
+                    } else {
+                        // No song playing
+                        if (currentSong !== "No Song Found") {
+                            currentSong = "No Song Found";
+                            currentArtist = "Enji Player";
+                            currentImage = "images/EnjiPlayer.png";
+
+                            $('#name').text(currentSong);
+                            $('#artists').text(currentArtist);
+                            $('#album-current').attr('src', currentImage);
                         }
                     }
+                },
+                error: function () {
+                    console.log("Error fetching now playing data");
+                },
+                complete: function () {
+                    // Schedule next update
+                    setTimeout(fetchNowPlaying, 2500);
                 }
-            }
-        });
-        setTimeout(songChange, 2500);
-    }
+            });
+        }
+    });
 </script>
+</body>
 </html>
