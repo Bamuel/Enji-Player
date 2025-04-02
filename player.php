@@ -40,6 +40,13 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
     <style>
+        @font-face {
+            font-family: proxima-nova;
+            src: url('fonts/proximanova_regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         * {
             -webkit-box-sizing: border-box;
             -moz-box-sizing: border-box;
