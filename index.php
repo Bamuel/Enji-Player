@@ -46,8 +46,6 @@ foreach ($users as $key => $user) {
         <thead>
         <tr>
             <th>Name</th>
-            <th>URI</th>
-            <th>Type</th>
             <th>Followers</th>
             <th>Player</th>
         </tr>
@@ -63,8 +61,6 @@ foreach ($users as $key => $user) {
                     <?php endif; ?>
                     <?php echo htmlspecialchars($user['user']); ?>
                 </td>
-                <td><?php echo htmlspecialchars($user['user_uri']); ?></td>
-                <td><?php echo htmlspecialchars($user['type']); ?></td>
                 <td><?php echo number_format($user['followers'] ?? 0); ?></td>
                 <td><a href="/player.php?id=<?php echo urlencode($user['user_uri']); ?>">View Player</a></td>
             </tr>
