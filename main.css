@@ -93,3 +93,12 @@ hr {
 .btn-spotify i {
     margin-right: 8px;
 }
+
+.profile-pic {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    margin-right: 5px;
+    vertical-align: middle;
+    border-radius: 7px;
+}
