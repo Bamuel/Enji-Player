@@ -134,14 +134,6 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
             text-transform: uppercase;
         }
 
-        #requested {
-            color: #C8A2C8;
-            font-weight: 600;
-            margin: 0;
-            font-size: 15px;
-            text-transform: uppercase;
-        }
-
         #name {
             color: #fff;
             margin: 4px 0 0;
@@ -162,10 +154,6 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
             transform: translateX(0);
         }
 
-        h4.drop, h2.drop {
-            transform: translateY(100px);
-        }
-
         .artists-height-fix {
             min-height: 20px;
         }
@@ -184,27 +172,22 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
             }
         }
 
-        .theSnap {
-            animation: MrStarkIDontFeelSoGood 7s linear 1;
-        }
-
-        @keyframes MrStarkIDontFeelSoGood {
-            0% {
-                opacity: 1
-            }
-            50% {
-                opacity: 0.9
-            }
-            80% {
-                opacity: 0.6
-            }
-            100% {
-                opacity: 0
-            }
+        /* Back arrow styles */
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: black;
+            font-size: 24px;
+            text-decoration: none;
+            z-index: 100;
+            transition: transform 0.2s ease;
         }
     </style>
 </head>
 <body>
+<!-- Back arrow added here -->
+<a href="index.php" class="back-arrow">←</a>
 <div class="wrapper">
     <div id="container" class="raise active">
         <div class="cover">

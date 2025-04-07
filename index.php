@@ -34,12 +34,19 @@ foreach ($users as $key => $user) {
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
     <link rel="manifest" href="images/site.webmanifest">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 <body>
 <div id="Header">
     <h1>Enji Player</h1>
     <p>A music playing software for streamers</p>
     <hr>
+    <div class="add-account-container">
+        <a href="/install.php" class="btn-spotify">
+            <i class="fab fa-spotify"></i> Add your Spotify account
+        </a>
+    </div>
+    <p style="font-size: small"><i class="fas fa-exclamation-circle"></i> *Our Spotify key is currently in trial phase with limited availability. Request access <a href="mailto:me@bamuel.com?subject=Enji%20Player%20Spotify%20Access%20Request&body=Hi%20there,%0D%0A%0D%0AI'd%20like%20to%20request%20access%20to%20the%20Enji%20Player%20Spotify%20integration.%0D%0A%0D%0AMy%20Spotify%20email%3A%20%0D%0A%0D%0AThanks!">here</a>.</p>
 </div>
 <div>
     <table>
