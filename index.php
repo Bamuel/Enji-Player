@@ -38,6 +38,7 @@ foreach ($users as $key => $user) {
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
     <link rel="manifest" href="images/site.webmanifest">
     <link rel="stylesheet" href="vendor/fortawesome/font-awesome/css/all.min.css">
+    <link rel="stylesheet" href="vendor/datatables.net/datatables.net-dt/css/dataTables.dataTables.min.css">
 </head>
 <body>
 <div id="Header">
@@ -51,8 +52,8 @@ foreach ($users as $key => $user) {
     </div>
     <p style="font-size: small"><i class="fas fa-exclamation-circle"></i> *Our Spotify key is currently in trial phase with limited availability. Request access <a href="mailto:me@bamuel.com?subject=Enji%20Player%20Spotify%20Access%20Request&body=Hi%20there,%0D%0A%0D%0AI'd%20like%20to%20request%20access%20to%20the%20Enji%20Player%20Spotify%20integration.%0D%0A%0D%0AMy%20Spotify%20email%3A%20%0D%0A%0D%0AThanks!">here</a>.</p>
 </div>
-<div>
-    <table>
+<div style="width: 80%; margin: auto;">
+    <table id="enji-users" class="row-border hover">
         <thead>
         <tr>
             <th>Name</th>
@@ -80,3 +81,10 @@ foreach ($users as $key => $user) {
 </div>
 </body>
 </html>
+<script src="vendor/components/jquery/jquery.min.js"></script>
+<script src="vendor/datatables.net/datatables.net/js/dataTables.min.js"></script>
+<script>
+    $(document).ready(function () {
+        new DataTable('#enji-users');
+    });
+</script>
