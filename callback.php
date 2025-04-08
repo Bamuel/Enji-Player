@@ -1,6 +1,8 @@
 <?php
+include_once ('vendor/autoload.php');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
-require_once 'load_env.php';
 
 if (!isset($_REQUEST['code'])) {
     echo 'An error has occurred';
@@ -29,9 +31,9 @@ else {
 
 
 function GetToken($code) {
-    $clientId = getenv('SPOTIFY_CLIENT_ID');
-    $clientSecret = getenv('SPOTIFY_CLIENT_SECRET');
-    $redirectUri = getenv('SPOTIFY_REDIRECT_URI');
+    $clientId = $_ENV['SPOTIFY_CLIENT_ID'];
+    $clientSecret = $_ENV['SPOTIFY_CLIENT_SECRET'];
+    $redirectUri = $_ENV['SPOTIFY_REDIRECT_URI'];
 
     // Prepare POST data
     $postData = [

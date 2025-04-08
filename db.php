@@ -1,9 +1,8 @@
 <?php
-require_once 'load_env.php';
 function getPDO() {
-    $dsn = 'mysql:host=' . getenv('MYSQL_HOST') . ';port=' . getenv('MYSQL_PORT') . ';dbname=' . getenv('MYSQL_DATABASE');
-    $username = getenv('MYSQL_USER');
-    $password = getenv('MYSQL_PASSWORD');
+    $dsn = 'mysql:host=' . $_ENV['MYSQL_HOST'] . ';port=' . $_ENV['MYSQL_PORT'] . ';dbname=' . $_ENV['MYSQL_DATABASE'];
+    $username = $_ENV['MYSQL_USER'];
+    $password = $_ENV['MYSQL_PASSWORD'];
     $options = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

@@ -1,0 +1,17 @@
+{
+    "name": "bamuel/enji-player",
+    "description": "A music playing software for streamers",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Samuel Levin",
+            "email": "me@bamuel.com"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "components/jquery": "^3.7",
+        "datatables.net/datatables.net-dt": "^2.2",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

@@ -4,7 +4,6 @@ if (!isset($_GET['id'])) {
     exit();
 }
 
-require_once 'load_env.php';
 require_once 'db.php';
 require_once 'functions.php';
 

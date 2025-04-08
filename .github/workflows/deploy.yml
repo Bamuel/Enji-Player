@@ -22,4 +22,5 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }}  # Use the DEPLOY_PATH secret for the project directory
             git fetch origin  # Fetch the latest changes from the remote repository
             git reset --hard origin/master  # Reset local changes and make local branch match the remote
+            composer install --no-dev --optimize-autoloader  # Use --no-dev in production
             git pull origin master  # Pull the latest changes from the remote repository

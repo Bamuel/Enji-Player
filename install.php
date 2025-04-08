@@ -1,8 +1,11 @@
 <?php
-require_once 'load_env.php';
-$clientID = getenv('SPOTIFY_CLIENT_ID');
-$secret = getenv('SPOTIFY_CLIENT_SECRET');
-$redirectUri = getenv('SPOTIFY_REDIRECT_URI');
+include_once ('vendor/autoload.php');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+$clientID = $_ENV['SPOTIFY_CLIENT_ID'];
+$secret = $_ENV['SPOTIFY_CLIENT_SECRET'];
+$redirectUri = $_ENV['SPOTIFY_REDIRECT_URI'];
 
 $scope = [
     "user-read-currently-playing",

@@ -1,4 +1,8 @@
 <?php
+include_once ('vendor/autoload.php');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 function getKeys($id) {
     try {
         include_once 'db.php';
@@ -30,8 +34,8 @@ function getKeys($id) {
     }
 }
 function refreshKeys($data, $pdo) {
-    $clientId = getenv('SPOTIFY_CLIENT_ID');
-    $clientSecret = getenv('SPOTIFY_CLIENT_SECRET');
+    $clientId = $_ENV['SPOTIFY_CLIENT_ID'];
+    $clientSecret = $_ENV['SPOTIFY_CLIENT_SECRET'];
 
     // Prepare POST data
     $postData = [

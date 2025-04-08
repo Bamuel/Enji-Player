@@ -1,5 +1,8 @@
 <?php
-require_once 'load_env.php';
+include_once ('vendor/autoload.php');
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
 require_once 'db.php';
 require_once 'functions.php';
 
