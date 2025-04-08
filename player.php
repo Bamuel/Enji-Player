@@ -38,6 +38,7 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
     <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="stylesheet" href="vendor/fortawesome/font-awesome/css/all.min.css">
     <style>
         @font-face {
             font-family: proxima-nova;
@@ -186,7 +187,7 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
 </head>
 <body>
 <!-- Back arrow added here -->
-<a href="index.php" class="back-arrow">←</a>
+<a href="index.php" class="back-arrow"><i class="fa-solid fa-arrow-left"></i></a>
 <div class="wrapper">
     <div id="container" class="raise active">
         <div class="cover">
@@ -199,7 +200,7 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="vendor/components/jquery/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
         // Initialize with default values
