@@ -248,7 +248,7 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
                     }
                 },
                 error: function () {
-                    console.log("Error fetching now playing data");
+                    //console.log("Error fetching now playing data");
                 },
                 complete: function () {
                     // Schedule next update
