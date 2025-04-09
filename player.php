@@ -10,20 +10,33 @@ require_once 'functions.php';
 $initialData = [
     'image' => "images/EnjiPlayer.png",
     'artist' => "Enji Player",
-    'song' => "No Song Found"];
+    'song' => "No Song Found",
+    'is_playing' => false,
+    'progress' => 0,
+    'duration' => 0];
 
 $keys = GetKeys($_GET['id']);
 $nowPlayingData = json_decode(getNowPlaying($keys), true);
 
-if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
-    $initialData['image'] = $nowPlayingData['item']['album']['images'][0]['url'];
-    $artists = array_map(function ($artist) {
-        return $artist['name'];
-    }, $nowPlayingData['item']['artists']);
-    $initialData['artist'] = implode(', ', $artists);
-    $initialData['song'] = $nowPlayingData['item']['name'];
+if (!empty($nowPlayingData)) {
+    if (!empty($nowPlayingData['item'])) {
+        $initialData['image'] = $nowPlayingData['item']['album']['images'][0]['url'];
+        $artists = array_map(function ($artist) {
+            return $artist['name'];
+        }, $nowPlayingData['item']['artists']);
+        $initialData['artist'] = implode(', ', $artists);
+        $initialData['song'] = $nowPlayingData['item']['name'];
+    }
+    if (isset($nowPlayingData['is_playing'])) {
+        $initialData['is_playing'] = $nowPlayingData['is_playing'];
+    }
+    if (isset($nowPlayingData['progress_ms'])) {
+        $initialData['progress'] = $nowPlayingData['progress_ms'];
+    }
+    if (!empty($nowPlayingData['item']) && isset($nowPlayingData['item']['duration_ms'])) {
+        $initialData['duration'] = $nowPlayingData['item']['duration_ms'];
+    }
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -187,6 +200,23 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
         .hide-in-iframe {
             display: none !important;
         }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            background-color: rgba(200, 162, 200, 0.6);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 10;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #C8A2C8;
+            width: <?php echo $initialData['duration'] > 0 ? ($initialData['progress'] / $initialData['duration'] * 100) : 0; ?>%;
+            transition: width 2.5s linear;
+        }
     </style>
 </head>
 <body>
@@ -201,14 +231,17 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
             <div class="artists-height-fix"><h4 id="artists" class="active"><?php echo htmlspecialchars($initialData['artist']); ?></h4></div>
             <h2 id="name" class="active scrolling"><?php echo htmlspecialchars($initialData['song']); ?></h2>
         </div>
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
     </div>
 </div>
 
 <script src="vendor/components/jquery/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
+        // Not in an iframe, show the back arrow
         if (window.self === window.top) {
-            // Not in an iframe, show the back arrow
             $('.back-arrow').removeClass('hide-in-iframe');
         }
 
@@ -243,6 +276,11 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
                                 $('#album-current').attr('src', currentImage);
                             }
                         }
+                        // Update progress in your AJAX callback
+                        if (data.progress_ms && data.item.duration_ms) {
+                            const progress = (data.progress_ms / data.item.duration_ms) * 100;
+                            $('.progress-bar').css('width', progress + '%');
+                        }
                     } else {
                         // No song playing
                         if (currentSong !== "No Song Found") {
@@ -253,6 +291,7 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
                             $('#name').text(currentSong);
                             $('#artists').text(currentArtist);
                             $('#album-current').attr('src', currentImage);
+                            $('.progress-bar').css('width', '0%');
                         }
                     }
                 },
