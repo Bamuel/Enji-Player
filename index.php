@@ -12,16 +12,16 @@ $users = $stmt->fetchAll();
 
 foreach ($users as $key => $user) {
     $userdeets = getSpotifyDetails($user['user_uri']);
-    $users[$key]['spotify_id'] = $userdeets['id'];
-    if (is_array($userdeets['images']) && !empty($userdeets['images'])) {
+    $users[$key]['spotify_id'] = $userdeets['id'] ?? null;
+    if (isset($userdeets['images']) && is_array($userdeets['images']) && !empty($userdeets['images'])) {
         $lastImage = end($userdeets['images']);
         $users[$key]['profile_picture'] = $lastImage['url'] ?? null; // Use null coalescing for safety
     }
     else {
         $users[$key]['profile_picture'] = null; // Default value if no images exist
     }
-    $users[$key]['display_name'] = $userdeets['display_name'];
-    $users[$key]['type'] = $userdeets['type'];
+    $users[$key]['display_name'] = $userdeets['display_name'] ?? null; // Use null coalescing for safety
+    $users[$key]['type'] = $userdeets['type'] ?? null; // Use null coalescing for safety
     $users[$key]['external_urls'] = $userdeets['external_urls']['spotify'] ?? null; // Use null coalescing for safety
     $users[$key]['followers'] = $userdeets['followers']['total'] ?? 0; // Use null coalescing for safety
 }
