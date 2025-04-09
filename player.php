@@ -183,11 +183,15 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
             z-index: 100;
             transition: transform 0.2s ease;
         }
+
+        .hide-in-iframe {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
 <!-- Back arrow added here -->
-<a href="index.php" class="back-arrow"><i class="fa-solid fa-arrow-left"></i></a>
+<a href="index.php" class="back-arrow hide-in-iframe"><i class="fa-solid fa-arrow-left"></i></a>
 <div class="wrapper">
     <div id="container" class="raise active">
         <div class="cover">
@@ -203,6 +207,11 @@ if (!empty($nowPlayingData) && !empty($nowPlayingData['item'])) {
 <script src="vendor/components/jquery/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
+        if (window.self === window.top) {
+            // Not in an iframe, show the back arrow
+            $('.back-arrow').removeClass('hide-in-iframe');
+        }
+
         // Initialize with default values
         let currentSong = "";
         let currentImage = "images/EnjiPlayer.png";
