@@ -13,7 +13,9 @@ $initialData = [
     'song' => "No Song Found",
     'is_playing' => false,
     'progress' => 0,
-    'duration' => 0];
+    'duration' => 0,
+    'last_played' => false,
+    'played_at' => null,];
 
 $keys = GetKeys($_GET['id']);
 $nowPlayingData = json_decode(getNowPlaying($keys), true);
@@ -35,6 +37,22 @@ if (!empty($nowPlayingData)) {
     }
     if (!empty($nowPlayingData['item']) && isset($nowPlayingData['item']['duration_ms'])) {
         $initialData['duration'] = $nowPlayingData['item']['duration_ms'];
+    }
+}
+else {
+    $nowPlayingData = json_decode(getLastPlayed($keys), true);
+    if (!empty($nowPlayingData)) {
+        if (!empty($nowPlayingData['items'][0])) {
+            $initialData['image'] = $nowPlayingData['items'][0]['track']['album']['images'][0]['url'];
+            $artists = array_map(function ($artist) {
+                return $artist['name'];
+            }, $nowPlayingData['items'][0]['track']['artists']);
+            $initialData['artist'] = implode(', ', $artists);
+            $initialData['song'] = $nowPlayingData['items'][0]['track']['name'];
+            $initialData['last_played'] = true;
+            //change to Australian Sydney timezone
+            $initialData['played_at'] = formatDate($nowPlayingData['items'][0]['played_at']);
+        }
     }
 }
 ?>
@@ -222,8 +240,18 @@ if (!empty($nowPlayingData)) {
 <body>
 <!-- Back arrow added here -->
 <a href="index.php" class="back-arrow hide-in-iframe"><i class="fa-solid fa-arrow-left"></i></a>
+
 <div class="wrapper">
     <div id="container" class="raise active">
+        <?php
+        //Last played check
+        if ($initialData['last_played'] && $initialData['played_at']) {
+            echo '<div id="last-played">';
+            echo '<div style="position: absolute; top: 10px; right: 10px; color: #C8A2C8; font-size: 12px;">Last Played</div>';
+            echo '<div style="position: absolute; top: 20px; right: 10px; color: #C8A2C8; font-size: 12px;">' . $initialData['played_at'] . '</div>';
+            echo '</div>';
+        }
+        ?>
         <div class="cover">
             <img id="album-current" alt="Current album cover" class="active" src="<?php echo htmlspecialchars($initialData['image']); ?>">
         </div>
@@ -259,6 +287,8 @@ if (!empty($nowPlayingData)) {
                 data: {id: "<?php echo $_GET['id']; ?>"},
                 dataType: 'json',
                 success: function (data) {
+                    //last-played hide
+                    $('#last-played').remove();
                     if (data && data.item) {
                         // Update song if changed
                         if (data.item.name !== currentSong) {
@@ -282,7 +312,7 @@ if (!empty($nowPlayingData)) {
                             $('.progress-bar').css('width', progress + '%');
                         }
                     } else {
-                        // No song playing
+                        // No song playing but returned 200
                         if (currentSong !== "No Song Found") {
                             currentSong = "No Song Found";
                             currentArtist = "Enji Player";
@@ -296,6 +326,7 @@ if (!empty($nowPlayingData)) {
                     }
                 },
                 error: function () {
+                    //returned 4xx
                     //console.log("Error fetching now playing data");
                 },
                 complete: function () {
